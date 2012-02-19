@@ -50,7 +50,7 @@ class Feed(models.Model):
 
     The member / table column naming follows the Atom format.
     """
-    TYPE_CHOICES = tuple(feedparser.SUPPORTED_VERSIONS.items()[1:])
+    TYPE_CHOICES = tuple(sorted(feedparser.SUPPORTED_VERSIONS.items()[1:]))
 
     url = models.URLField(unique=True)
     version = models.CharField(max_length=7, choices=TYPE_CHOICES, default=u'rss20')
