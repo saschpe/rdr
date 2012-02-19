@@ -1,0 +1,9 @@
+{% if feeds %}
+    <ul>
+        {% for feed in feeds %}
+            <li><a href="/feeds/{{ feed.id }}/">{{ feed.title }}</a></li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No feeds are available.</p>
+{% endif %}
