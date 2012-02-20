@@ -1,0 +1,44 @@
+from fabric.api import run
+
+
+def host_type():
+    run('uname -s')
+
+def syncdb():
+    '''Run syncdb.'''
+    require('site_path')
+    require('venv_path')
+
+    with cd(env.site_path):
+        run(_python('manage.py syncdb --noinput'))
+
+
+def collectstatic():
+    '''Collect static media.'''
+    require('site_path')
+    require('venv_path')
+
+    with cd(env.site_path):
+        sudo(_python('manage.py collectstatic --noinput'))
+
+
+def rebuild_index():
+    '''Rebuild the search index.'''
+    require('site_path')
+    require('venv_path')
+    require('process_owner')
+
+    with cd(env.site_path):
+        sudo(_python('manage.py rebuild_index'))
+        sudo('chown -R {0} .xapian'.format(env.process_owner))
+
+
+def update_index():
+    '''Update the search index.'''
+    require('site_path')
+    require('venv_path')
+    require('process_owner')
+
+    with cd(env.site_path):
+        sudo(_python('manage.py update_index'))
+        sudo('chown -R {0} .xapian'.format(env.process_owner))
