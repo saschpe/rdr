@@ -4,5 +4,5 @@ from django.conf.urls.defaults import patterns, include, url
 
 urlpatterns = patterns('feeds.views',
     url(r'^$', 'index'),
-    url(r'^(?<feed_id>\d+)/$', 'show'),
+    url(r'^(?P<feed_id>\d+)/$', 'show'),
 )

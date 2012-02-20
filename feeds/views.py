@@ -10,6 +10,6 @@ def index(request):
     feeds = Feed.objects.all().order_by('-updated')[:20]
     return render_to_response('feeds/index.html', {'feeds': feeds})
 
-def show(request):
+def show(request, feed_id):
     feed = get_object_or_404(Feed, pk=feed_id)
     return render_to_response('feeds/show.html', {'feed': feed})
