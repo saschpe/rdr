@@ -67,7 +67,7 @@ class Feed(models.Model):
         pass
 
     def __unicode__(self):
-        return '{0} ({1})'.format(self.title, self.link)
+        return self.title
 
 
 class EntryManager(models.Manager):
@@ -122,7 +122,7 @@ class Entry(models.Model):
         pass
 
     def __unicode__(self):
-        return '{0} ({1})'.format(self.title, self.link)
+        return self.title
 
 
 #class Subscription(models.Model):
