@@ -13,7 +13,7 @@ class EntryAdmin(admin.ModelAdmin):
     fieldsets = (
         (None,                  {'fields': ['feed', 'title', 'summary', 'link', 'author']}),
         ('Date information',    {'fields': ['published', 'updated'], 'classes': ['collapse']}),
-        ('Caching information', {'fields': ['etag', 'modified'], 'classes': ['collapse']}),
+        #('Caching information', {'fields': ['etag', 'modified'], 'classes': ['collapse']}),
     )
 
 
