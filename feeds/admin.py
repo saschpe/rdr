@@ -1,24 +1,25 @@
 # -*- coding: utf-8 -*-
 
-from models import Feed, Post
+from models import Feed, Entry
 
 from django.contrib import admin
 
 
-class PostAdmin(admin.ModelAdmin):
+class EntryAdmin(admin.ModelAdmin):
     date_hierarchy = 'updated'
     list_display = ('feed', 'title', 'summary', 'link', 'author')
     list_filter  = list_display
     search_fields = list_display
     fieldsets = (
-        (None,               {'fields': ['feed', 'title', 'summary', 'link', 'author']}),
-        ('Date information', {'fields': ['published', 'updated'], 'classes': ['collapse']}),
+        (None,                  {'fields': ['feed', 'title', 'summary', 'link', 'author']}),
+        ('Date information',    {'fields': ['published', 'updated'], 'classes': ['collapse']}),
+        ('Caching information', {'fields': ['etag', 'modified'], 'classes': ['collapse']}),
     )
 
 
-class PostInline(admin.StackedInline):
-    model = Post
-    fieldsets = PostAdmin.fieldsets
+class EntryInline(admin.StackedInline):
+    model = Entry
+    fieldsets = EntryAdmin.fieldsets
     extra = 3
 
 
@@ -31,8 +32,8 @@ class FeedAdmin(admin.ModelAdmin):
         (None,               {'fields': ['url', 'version', 'title', 'subtitle', 'link']}),
         ('Date information', {'fields': ['updated'], 'classes': ['collapse']}),
     )
-    inlines = (PostInline,)
+    inlines = (EntryInline,)
 
 
 admin.site.register(Feed, FeedAdmin)
-admin.site.register(Post, PostAdmin)
+admin.site.register(Entry, EntryAdmin)

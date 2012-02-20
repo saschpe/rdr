@@ -5,7 +5,7 @@ from django.db import models
 
 import feedparser
 
-from datetime import datetime
+import datetime
 
 
 class FeedManager(models.Manager):
@@ -14,13 +14,13 @@ class FeedManager(models.Manager):
     Provides table-level methods to create Feed model objects from RSS/Atom 
     content fetched from a URL using the 'feedparser' Python module.
     """
-    def get_or_create_from_url(self, url, create_posts=True):
+    def get_or_create_from_url(self, url, create_entrys=True):
         try:
             return Feed.objects.get(url=url)
         except Feed.DoesNotExist:
-            return self.create_from_url(url, create_posts)
+            return self.create_from_url(url, create_entrys)
 
-    def create_from_url(self, url, create_posts=True):
+    def create_from_url(self, url, create_entrys=True):
         parsed = feedparser.parse(url)
         feed = Feed(
             url=parsed.href,
@@ -29,19 +29,14 @@ class FeedManager(models.Manager):
             subtitle=parsed.feed.get('subtitle', ''),
             link=parsed.feed.get('link', ''),
             etag=parsed.get('etag', ''),
-            modified=parsed.get('modified', ''),
         )
         if parsed.feed.has_key('updated_parsed'):
-            feed.updated = datetime(*parsed.feed.updated_parsed[:6])
-       #if parsed.feed.has_key('icon'):
-       #    feed.image = 
-       #elif parsed.feed.has_key('logo'):
-       #    pass
-       #elif parsed.feed.has_key('image'):
-       #    pass
+            feed.updated = datetime.datetime(*parsed.feed.updated_parsed[:6])
+        if parsed.feed.has_key('modified_parsed'):
+            feed.modified = datetime.datetime(*parsed.feed.modified_parsed[:6])
         feed.save()
-        if create_posts:
-            PostManager.create_from_feed(feed, parsed)
+        if create_entrys:
+            Entry.objects.create_from_feed(feed, parsed)
         return feed
 
 
@@ -57,10 +52,10 @@ class Feed(models.Model):
     title = models.CharField(max_length=256)
     subtitle = models.CharField(max_length=256)
     link = models.URLField()
-    updated = models.DateTimeField(blank=True)
-    etag = models.CharField(max_length=64, editable=False) # HTTP ETag header
-    modified = models.DateTimeField(editable=False) # HTTP Last-Modified header
-    #fetched = models.DateTimeField(auto_now=True, auto_now_add=True)
+    updated = models.DateTimeField(null=True)
+
+    etag = models.CharField(blank=True, max_length=64, editable=False) # HTTP ETag header
+    modified = models.DateTimeField(null=True, editable=False) # HTTP Last-Modified header
 
     objects = FeedManager() # Custom model manager
 
@@ -72,11 +67,11 @@ class Feed(models.Model):
         pass
 
     def __unicode__(self):
-        return '{0} {1}'.format(self.title, self.url)
+        return '{0} ({1})'.format(self.title, self.link)
 
 
-class PostManager(models.Manager):
-    """Custom Post model manager.
+class EntryManager(models.Manager):
+    """Custom Entry model manager.
     """
     #def get_or_create_from_feed(self, feed, parsed=None):
     #    #TODO
@@ -85,26 +80,26 @@ class PostManager(models.Manager):
     def create_from_feed(self, feed, parsed=None):
         if parsed is None:
             parsed = feedparser.parse(feed.url)
-        posts = []
-        for entry in parsed.entries:
-            post = Post(
+        entrys = []
+        for e in parsed.entries:
+            entry = Entry(
                 feed=feed,
-                title=entry.title,
-                summary=entry.get('summary', ''),
-                content=entry.get('content', ''),
-                link=entry.get('link', ''),
-                author=entry.get('author', ''),
+                title=e.title,
+                summary=e.get('summary', ''),
+                content=e.get('content', ''),
+                link=e.get('link', ''),
+                author=e.get('author', ''),
             )
-            if entry.has_key('updated_parsed'):
-                post.updated = datetime(*entry.updated_parsed[:6])
-            if entry.has_key('published_parsed'):
-                post.published = datetime(*entry.published_parsed[:6])
-            post.save()
-            posts.append(post)
-        return posts
+            if e.has_key('updated_parsed'):
+                entry.updated = datetime.datetime(*e.updated_parsed[:6])
+            if e.has_key('published_parsed'):
+                entry.published = datetime.datetime(*e.published_parsed[:6])
+            entry.save()
+            entrys.append(entry)
+        return entrys
 
 
-class Post(models.Model):
+class Entry(models.Model):
     """Web feed entry model.
 
     The member / table column naming follows the Atom format.
@@ -115,11 +110,10 @@ class Post(models.Model):
     content = models.TextField(blank=True)
     link = models.URLField()
     author = models.CharField(blank=True, max_length=64)
-    published = models.DateTimeField(blank=True)
-    updated = models.DateTimeField(blank=True)
-    #fetched = models.DateTimeField(auto_now=True, auto_now_add=True)
+    published = models.DateTimeField(null=True)
+    updated = models.DateTimeField(null=True)
 
-    objects = PostManager() # Custom model manager
+    objects = EntryManager() # Custom model manager
 
     class Meta:
         ordering = ['published', 'title']
@@ -128,14 +122,14 @@ class Post(models.Model):
         pass
 
     def __unicode__(self):
-        return self.title
+        return '{0} ({1})'.format(self.title, self.link)
 
 
 #class Subscription(models.Model):
 #    user = models.ForeignKey(User)
 #    feed = models.ForeignKey(Feed)
 #    #custom_title = models.CharField(max_length=256)
-#    unread_posts = models.PositiveIntegerField()
+#    unread_entrys = models.PositiveIntegerField()
 
 #    class Meta:
 #        ordering = ['user', 'feed']
