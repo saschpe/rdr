@@ -8,8 +8,8 @@ from django.contrib import admin
 class EntryAdmin(admin.ModelAdmin):
     date_hierarchy = 'updated'
     list_display = ('feed', 'title', 'summary', 'link', 'author')
-    list_filter  = list_display
-    search_fields = list_display
+    list_filter  = ('feed', 'author')
+    search_fields = ('title', 'summary', 'link', 'author')
     fieldsets = (
         (None,                  {'fields': ['feed', 'title', 'summary', 'link', 'author']}),
         ('Date information',    {'fields': ['published', 'updated'], 'classes': ['collapse']}),
@@ -25,9 +25,9 @@ class EntryInline(admin.StackedInline):
 
 class FeedAdmin(admin.ModelAdmin):
     date_hierarchy = 'updated'
-    list_display = ('url', 'version', 'title', 'subtitle', 'link')
-    list_filter  = list_display
-    search_fields= list_display
+    list_display   = ('url', 'title', 'subtitle', 'link', 'version')
+    list_filter    = ('version', 'title', 'link')
+    search_fields  = ('url', 'title', 'subtitle', 'link')
     fieldsets = (
         (None,               {'fields': ['url', 'version', 'title', 'subtitle', 'link']}),
         ('Date information', {'fields': ['updated'], 'classes': ['collapse']}),
