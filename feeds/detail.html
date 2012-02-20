@@ -1,0 +1,5 @@
+{{ feed }}
+
+{% for entry in feed.entry_set.all %}
+    {{ entry }}
+{% endfor %}
