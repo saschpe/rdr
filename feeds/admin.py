@@ -25,11 +25,11 @@ class EntryInline(admin.StackedInline):
 
 class FeedAdmin(admin.ModelAdmin):
     date_hierarchy = 'updated'
-    list_display   = ('url', 'title', 'subtitle', 'link', 'version')
-    list_filter    = ('version', 'title', 'link')
+    list_display   = ('url', 'title', 'subtitle', 'link')
+    list_filter    = ('title', 'link')
     search_fields  = ('url', 'title', 'subtitle', 'link')
     fieldsets = (
-        (None,               {'fields': ['url', 'version', 'title', 'subtitle', 'link']}),
+        (None,               {'fields': ['url', 'title', 'subtitle', 'link']}),
         ('Date information', {'fields': ['updated'], 'classes': ['collapse']}),
     )
     inlines = (EntryInline,)
