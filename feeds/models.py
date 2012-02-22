@@ -105,7 +105,6 @@ class EntryManager(models.Manager):
             feed=feed,
             title=parsed_entry.title,
             summary=parsed_entry.get('summary', ''),
-            content=parsed_entry.get('content', ''),
             link=parsed_entry.get('link', ''),
             author=parsed_entry.get('author', ''),
         )
@@ -125,7 +124,6 @@ class Entry(models.Model):
     feed = models.ForeignKey(Feed)
     title = models.CharField(max_length=256)
     summary = models.TextField()
-    content = models.TextField(blank=True)
     link = models.URLField()
     author = models.CharField(blank=True, max_length=64)
     published = models.DateTimeField(null=True)
