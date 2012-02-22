@@ -1,4 +1,4 @@
-from fabric.api import abort, cd, local, run, settings
+from fabric.api import abort, cd, local, require, run, settings
 from fabric.contrib.console import confirm
 
 
@@ -90,6 +90,15 @@ def migrate_reset(args=''):
 
     with cd(env.site_path):
         sudo(_python('manage.py migrate --fake --delete-ghost-migrations ' + args))
+
+
+def schema_migration_auto(app=''):
+    ''''''
+    require('site_path')
+    require('venv_path')
+
+    with cd(env.site_path):
+        sudo(_python('manage.py schemamigration {0} --auto'.format(app)))
 
 
 def graph_migrations():
