@@ -55,6 +55,8 @@ class Feed(models.Model):
     etag = models.CharField(null=True, max_length=64, editable=False) # HTTP ETag header
     modified = models.DateTimeField(null=True, editable=False) # HTTP Last-Modified header
 
+    subscribers = models.ManyToManyField(User, through='Subscription')
+
     objects = FeedManager() # Custom model manager
 
     def update_by_url(self, create_entrys=True):
@@ -135,13 +137,19 @@ class Entry(models.Model):
         return self.title
 
 
-#class Subscription(models.Model):
-#    """User subscription to a web feed model.
-#    """
-#    user = models.ForeignKey(User)
-#    feed = models.ForeignKey(Feed)
-#    custom_feed_title = models.CharField(null=True, max_length=256)
-#    unread_entrys = models.PositiveIntegerField()
+class Subscription(models.Model):
+    """User subscription to a Feed join-table.
 
-#    def __unicode__(self):
-#        return '{0} ({2})'.format(self.title, self.unread)
+    Stores a custom Feed title that be set by the user.
+    """
+    user = models.ForeignKey(User)
+    feed = models.ForeignKey(Feed)
+    custom_feed_title = models.CharField(null=True, max_length=256)
+    #unread_entrys = models.PositiveIntegerField()
+
+    class Meta:
+        ordering = ['user', 'feed']
+        unique_together = (('user', 'feed'))
+
+    def __unicode__(self):
+        return '{0} ({2})'.format(self.title, self.unread)
