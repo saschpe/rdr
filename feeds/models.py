@@ -144,7 +144,7 @@ class Subscription(models.Model):
     """
     user = models.ForeignKey(User)
     feed = models.ForeignKey(Feed)
-    custom_feed_title = models.CharField(null=True, max_length=256)
+    custom_feed_title = models.CharField(null=True, blank=True, max_length=256)
     #unread_entrys = models.PositiveIntegerField()
 
     class Meta:
@@ -152,4 +152,4 @@ class Subscription(models.Model):
         unique_together = (('user', 'feed'))
 
     def __unicode__(self):
-        return '{0} ({2})'.format(self.title, self.unread)
+        return '{0} - {1}'.format(self.user, self.feed)
