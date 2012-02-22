@@ -9,11 +9,11 @@ import datetime
 
 
 class FeedManager(models.Manager):
-    """Custom Feed model manager.
+    '''Custom Feed model manager.
 
     Provides table-level methods to create Feed model objects from RSS/Atom
-    content fetched from a URL using the 'feedparser' Python module.
-    """
+    files fetched from a URL using the 'feedparser' Python module.
+    '''
     def get_or_create_by_url(self, url, create_entrys=True):
         try:
             return Feed.objects.get(url=url)
@@ -42,10 +42,10 @@ class FeedManager(models.Manager):
 
 
 class Feed(models.Model):
-    """Web feed model.
+    '''Web feed model.
 
     The member / table column naming follows the Atom format.
-    """
+    '''
     url = models.URLField(unique=True)
     title = models.CharField(max_length=256)
     subtitle = models.CharField(max_length=256)
@@ -55,17 +55,17 @@ class Feed(models.Model):
     etag = models.CharField(null=True, max_length=64, editable=False) # HTTP ETag header
     modified = models.DateTimeField(null=True, editable=False) # HTTP Last-Modified header
 
-    subscribers = models.ManyToManyField(User, through='Subscription')
+    subscribers = models.ManyToManyField(User, through='Subscription') # User Feed subscriptions
 
     objects = FeedManager() # Custom model manager
 
     def update_by_url(self, create_entrys=True):
-        """Update the Feed instance from it's web feed URL.
+        '''Update the Feed instance from it's web feed URL.
 
-        Honors HTTP Etag and Last-Modified headers to avoid fetching unchanged content.
-        """
+        Honors HTTP Etag and Last-Modified headers to avoid fetching unchanged files.
+        '''
         parsed = feedparser.parse(url, etag=feed.etag, modified=feed.modified)
-        if parsed.status == 304: # Unmodified content, nothing to do
+        if parsed.status == 304: # Unmodified file, nothing to do
             return
 
         self.title = parsed.feed.get('title', ''),
@@ -87,11 +87,11 @@ class Feed(models.Model):
 
 
 class EntryManager(models.Manager):
-    """Custom Entry model manager.
+    '''Custom Entry model manager.
 
     Provides table-level methods to create Entry model objects from RSS/Atom
-    content fetched from a URL using the 'feedparser' Python module.
-    """
+    files fetched from a URL using the 'feedparser' Python module.
+    '''
     def get_or_create_by_feed_and_parsed_entry(self, feed, parsed_entry):
         try:
             return Entry.objects.get(feed=feed, title=parsed_entry.title)
@@ -99,8 +99,8 @@ class EntryManager(models.Manager):
             return self.create_by_feed_and_parsed_entry(self, feed, parsed_entry)
 
     def create_by_feed_and_parsed_entry(self, feed, parsed_entry):
-        """Create an Entry model instance from a parsed web feed entry for a Feed instance.
-        """
+        '''Create an Entry model instance from a parsed web feed entry for a Feed instance.
+        '''
         entry = Entry(
             feed=feed,
             title=parsed_entry.title,
@@ -118,10 +118,10 @@ class EntryManager(models.Manager):
 
 
 class Entry(models.Model):
-    """Web feed entry model.
+    '''Web feed entry model.
 
     The member / table column naming follows the Atom format.
-    """
+    '''
     feed = models.ForeignKey(Feed)
     title = models.CharField(max_length=256)
     summary = models.TextField()
@@ -138,10 +138,10 @@ class Entry(models.Model):
 
 
 class Subscription(models.Model):
-    """User subscription to a Feed join-table.
+    '''User subscription to a Feed many-to-many relation (i.e. join-table).
 
     Stores a custom Feed title that be set by the user.
-    """
+    '''
     user = models.ForeignKey(User)
     feed = models.ForeignKey(Feed)
     custom_feed_title = models.CharField(blank=True, max_length=256)
