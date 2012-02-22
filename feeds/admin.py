@@ -7,7 +7,7 @@ from django.contrib import admin
 
 class EntryAdmin(admin.ModelAdmin):
     date_hierarchy = 'updated'
-    list_display = ('feed', 'title', 'summary', 'link', 'author')
+    list_display = ('feed', 'title', 'link', 'author')
     list_filter  = ('feed', 'author')
     search_fields = ('title', 'summary', 'link', 'author')
     fieldsets = (
