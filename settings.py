@@ -127,6 +127,8 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
 
     'feeds',
+
+    'south'
 )
 
 # A sample logging configuration. The only tangible logging
