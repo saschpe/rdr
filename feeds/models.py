@@ -144,7 +144,7 @@ class Subscription(models.Model):
     """
     user = models.ForeignKey(User)
     feed = models.ForeignKey(Feed)
-    custom_feed_title = models.CharField(null=True, blank=True, max_length=256)
+    custom_feed_title = models.CharField(blank=True, max_length=256)
     #unread_entrys = models.PositiveIntegerField()
 
     class Meta:
