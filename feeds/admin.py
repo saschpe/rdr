@@ -11,9 +11,9 @@ class EntryAdmin(admin.ModelAdmin):
     list_filter  = ('feed', 'author')
     search_fields = ('title', 'summary', 'link', 'author')
     fieldsets = (
-        (None,                  {'fields': ['feed', 'title', 'summary', 'link', 'author']}),
-        ('Date information',    {'fields': ['published', 'updated'], 'classes': ['collapse']}),
-        #('Caching information', {'fields': ['etag', 'modified'], 'classes': ['collapse']}),
+        (None,                  {'fields': ('feed', 'title', 'summary', 'link', 'author')}),
+        ('Date information',    {'fields': ('published', 'updated'), 'classes': ('collapse')}),
+        #('Caching information', {'fields': ('etag', 'modified'), 'classes': ('collapse')}),
     )
 
 
@@ -29,8 +29,8 @@ class FeedAdmin(admin.ModelAdmin):
     list_filter    = ('title', 'link')
     search_fields  = ('url', 'title', 'subtitle', 'link')
     fieldsets = (
-        (None,               {'fields': ['url', 'title', 'subtitle', 'link']}),
-        ('Date information', {'fields': ['updated'], 'classes': ['collapse']}),
+        (None,               {'fields': ('url', 'title', 'subtitle', 'link')}),
+        ('Date information', {'fields': ('updated'), 'classes': ('collapse')}),
     )
     inlines = (EntryInline,)
 
