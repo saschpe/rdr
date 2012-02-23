@@ -60,7 +60,7 @@ class Feed(models.Model):
     objects = FeedManager() # Custom model manager
 
     def update_by_url(self, create_entrys=True):
-        '''Update the Feed instance from it's web feed URL.
+        '''Update the feed instance from it's web feed URL.
 
         Honors HTTP Etag and Last-Modified headers to avoid fetching unchanged files.
         '''
@@ -135,15 +135,38 @@ class Entry(models.Model):
         return self.title
 
 
-class Subscription(models.Model):
-    '''User subscription to a Feed many-to-many relation (i.e. join-table).
+class ReadEntry(models.Model):
+    '''
+    '''
+    subscription = models.ForeignKey('Subscription')
+    entry = models.ForeignKey(Entry)
+    marked = models.BooleanField(default=False)
 
-    Stores a custom Feed title that be set by the user.
+    class Meta:
+        ordering = ['subscription', 'entry']
+        unique_together = (('subscription', 'entry'))
+
+    def __unicode__(self):
+        return '{0} - {1}'.format(self.subscription, self.entry)
+
+
+class Subscription(models.Model):
+    '''User subscription to a feed M2M relationship.
+
+    Stores a custom feed title that be set by the user. Unread entries are
+    stored directly as a counter and only read entries have a real M2M
+    relationship.
+    
+    This should be fastest when a new subscription is added, the amount of
+    unread entries equals all entries of a given feed. The 'read' M2M
+    relationship goes through the 'ReadEntry' model that allows to store
+    additional user-saved data (like a bookmarked state or a comment).
     '''
     user = models.ForeignKey(User)
     feed = models.ForeignKey(Feed)
     custom_feed_title = models.CharField(blank=True, max_length=256)
-    #unread_entrys = models.PositiveIntegerField()
+    read_entries = models.ManyToManyField(Entry, through='ReadEntry')
+    unread_entries = models.PositiveIntegerField(default=0)
 
     class Meta:
         ordering = ['user', 'feed']

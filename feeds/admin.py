@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from models import Entry, Feed, Subscription
+from models import Entry, Feed, ReadEntry, Subscription
 
 from django.contrib import admin
 
@@ -35,12 +35,19 @@ class FeedAdmin(admin.ModelAdmin):
     inlines = (EntryInline,)
 
 
+class ReadEntryAdmin(models.ModelAdmin):
+    list_display  = ('subscription', 'entry', 'marked')
+    list_filter   = ('subscription', 'entry')
+    search_fields = ('subscription__user', 'entry__title')
+
+
 class SubscriptionAdmin(admin.ModelAdmin):
     list_display  = ('user', 'feed', 'custom_feed_title')
     list_filter   = ('user', 'feed')
     search_fields = ('user__username', 'feed__title')
 
 
-admin.site.register(Feed, FeedAdmin)
 admin.site.register(Entry, EntryAdmin)
+admin.site.register(Feed, FeedAdmin)
+admin.site.register(ReadEntry, ReadEntryAdmin)
 admin.site.register(Subscription, SubscriptionAdmin)
