@@ -30,12 +30,12 @@ class FeedAdmin(admin.ModelAdmin):
     search_fields  = ('url', 'title', 'subtitle', 'link')
     fieldsets = (
         (None,               {'fields': ('url', 'title', 'subtitle', 'link')}),
-        ('Date information', {'fields': ('updated'), 'classes': ('collapse')}),
+        ('Date information', {'fields': ('updated',), 'classes': ('collapse')}),
     )
     inlines = (EntryInline,)
 
 
-class ReadEntryAdmin(models.ModelAdmin):
+class ReadEntryAdmin(admin.ModelAdmin):
     list_display  = ('subscription', 'entry', 'marked')
     list_filter   = ('subscription', 'entry')
     search_fields = ('subscription__user', 'entry__title')
