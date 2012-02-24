@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from django.conf.urls.defaults import patterns, include, url
+from django.conf.urls.defaults import patterns
+
 
 urlpatterns = patterns('feeds.views',
-    url(r'^$', 'index'),
-    url(r'^(?P<feed_id>\d+)/$', 'show'),
+    (r'^$', 'index'),
+    (r'^(?P<feed_id>\d+)/$', 'show'),
 )
