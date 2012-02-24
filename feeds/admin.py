@@ -7,9 +7,9 @@ from django.contrib import admin
 
 class EntryAdmin(admin.ModelAdmin):
     date_hierarchy = 'updated'
-    list_display = ('feed', 'title', 'link', 'author')
-    list_filter  = ('feed', 'author')
-    search_fields = ('title', 'summary', 'link', 'author')
+    list_display   = ('feed', 'title', 'link', 'author')
+    list_filter    = ('feed', 'author')
+    search_fields  = ('title', 'summary', 'link', 'author')
     fieldsets = (
         (None,                  {'fields': ('feed', 'title', 'summary', 'link', 'author')}),
         ('Date information',    {'fields': ('published', 'updated'), 'classes': ('collapse')}),
@@ -41,10 +41,17 @@ class ReadEntryAdmin(admin.ModelAdmin):
     search_fields = ('subscription__user', 'entry__title')
 
 
+class ReadEntryInline(admin.StackedInline):
+    model = ReadEntry
+    fieldsets = ReadEntryAdmin.fieldsets
+    extra = 5
+
+
 class SubscriptionAdmin(admin.ModelAdmin):
     list_display  = ('user', 'feed', 'custom_feed_title')
     list_filter   = ('user', 'feed')
     search_fields = ('user__username', 'feed__title')
+    inlines = (ReadEntryInline,)
 
 
 admin.site.register(Entry, EntryAdmin)
