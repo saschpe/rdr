@@ -1,9 +1,15 @@
-{% if feeds %}
-    <ul>
-        {% for feed in feeds %}
-            <li><a href="/feeds/{{ feed.id }}/">{{ feed.title }}</a></li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>No feeds are available.</p>
-{% endif %}
+{% extends 'index.html' %}
+
+{% block content %}
+  <div class="row-fluid">
+    <div class="span8">
+      <h4>Recent updates to your subscriptions</h4>
+    </div>
+    <div class="span4">
+      <h4>Recently marked entries</h4>
+      <p>..</p>
+      <h4>Recently read entries</h4>
+      <p>..</p>
+    </div>
+  </div>
+{% endblock %}

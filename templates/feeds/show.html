@@ -1,24 +1,24 @@
 {% extends 'index.html' %}
 
 {% block content %}
-<a href="{{ feed.link }}" target="_blank"><h3>{{ feed.title }}</h3></a>
-{% if feed.subtitle %}<small>{{ feed.subtitle }}</small>{% endif %}
-<hr/>
+  <a href="{{ feed.link }}" target="_blank"><h3>{{ feed.title }}</h3></a>
+  {% if feed.subtitle %}<small>{{ feed.subtitle }}</small>{% endif %}
+  <hr/>
 
-{% for entry in feed.entry_set.all %}
-<div class="well">
-  {% if entry.published or entry.updated %}
-  <small class="pull-right">
-    {% if entry.published %}Published {{ entry.published }}{% endif %}
-    {% if entry.published and entry.updated %}<br/>{% endif %}
-    {% if entry.updated %}Updated {{ entry.updated }}{% endif %}
-  </small>
-  {% endif %}
-  <a href="{{ entry.link }}" target="_blank"><h4>{{ entry.title }}</h4></a>
-  {% if entry.author %}
-  <small>by {{ entry.author }}</small>
-  {% endif %}
-  <p>{{ entry.summary|safe }}</p>
-</div>
-{% endfor %}
+  {% for entry in feed.entry_set.all %}
+    <div class="well">
+      {% if entry.published or entry.updated %}
+        <small class="pull-right">
+          {% if entry.published %}Published {{ entry.published }}{% endif %}
+          {% if entry.published and entry.updated %}<br/>{% endif %}
+          {% if entry.updated %}Updated {{ entry.updated }}{% endif %}
+        </small>
+      {% endif %}
+      <a href="{{ entry.link }}" target="_blank"><h4>{{ entry.title }}</h4></a>
+      {% if entry.author %}
+        <small>by {{ entry.author }}</small>
+      {% endif %}
+      <p>{{ entry.summary|safe }}</p>
+    </div>
+  {% endfor %}
 {% endblock %}
