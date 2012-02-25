@@ -36,75 +36,53 @@
   <body>
     {% include 'navbar.html' %}
 
-    <div class="container-fluid">
-      {% if user.is_authenticated %}
-        {% include 'menubar.html' %}
-        <hr>
-      {% endif %}
+    {% block container %}
+      <div class="container-fluid">
+        {% if user.is_authenticated %}
+          {% include 'menubar.html' %}
+          <hr>
+        {% endif %}
 
-      <div class="row-fluid">
-        <div class="span2">
-          {% if user.is_authenticated %}
-            <div class="sidebar-nav">
-              <ul class="nav nav-list">
-                <li><a href="{% url feeds.views.index %}"><i class="icon-home"></i>Homepage</a></li>
-                <li><a href="#"><i class="icon-search"></i>Discover</a></li>
-                {% block sidebar_subscriptions %}
-                  {% if subscriptions %}
-                    <li class="nav-header">My Subscriptions</li>
-                    {% for subscription in subscriptions %}
-                      <li>
-                        <a href="{% url feeds.views.show subscription.feed.id %}">
-                          {% if subscription.custom_feed_title %}
-                            <i>{{ subscription.custom_feed_title }}</i>
-                          {% else %}
-                            {{ subscription.feed.title }}
-                          {% endif %}
-                          {% if subscription.unread_entries > 0 %}
-                            ({{ subscription.unread_entries }})
-                          {% endif %}
-                        </a>
-                      </li>
-                    {% endfor %}
-                  {% endif %}
-                {% endblock %}
-              </ul>
-            </div>
-          {% endif %}
+        <div class="row-fluid">
+          <div class="span2">
+            {% if user.is_authenticated %}
+              <div class="sidebar-nav">
+                <ul class="nav nav-list">
+                  <li><a href="{% url feeds.views.index %}"><i class="icon-home"></i>Homepage</a></li>
+                  <li><a href="#"><i class="icon-search"></i>Discover</a></li>
+                  {% block sidebar_subscriptions %}
+                    {% if subscriptions %}
+                      <li class="nav-header">My Subscriptions</li>
+                      {% for subscription in subscriptions %}
+                        <li>
+                          <a href="{% url feeds.views.show subscription.feed.id %}">
+                            {% if subscription.custom_feed_title %}
+                              <i>{{ subscription.custom_feed_title }}</i>
+                            {% else %}
+                              {{ subscription.feed.title }}
+                            {% endif %}
+                            {% if subscription.unread_entries > 0 %}
+                              ({{ subscription.unread_entries }})
+                            {% endif %}
+                          </a>
+                        </li>
+                      {% endfor %}
+                    {% endif %}
+                  {% endblock %}
+                </ul>
+              </div>
+            {% endif %}
+          </div>
+          <div class="span10">
+            {% block content %}Content goes here!{% endblock %}
+          </div>
         </div>
-        <div class="span10">
-          {% block content %}
-            <div class="hero-unit">
-              <h1>Rdr</h1>
-              <p>bla bla bla</p>
-              <p>This is a template for a simple marketing or informational website. It includes a large callout called the hero unit and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
-              <p>
-                <a class="btn btn-primary btn-large" href="{% url accounts.views.register %}">Sign Up »</a>
-                <a class="btn btn-primary btn-large" href="{% url django.contrib.auth.views.login %}?next={% url feeds.views.index %}">Log In »</a>
-              </p>
-            </div>
-            <div class="row-fluid">
-              <div class="span4">
-                <h2>Updates</h2>
-                <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-              </div><!--/span-->
-              <div class="span4">
-                <h2>Did you know</h2>
-                <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-              </div><!--/span-->
-              <div class="span4">
-                <h2>Did you know</h2>
-                <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-              </div><!--/span-->
-            </div>
-          {% endblock %}
-        </div>
+        <hr>
+        <footer>
+          <p>&copy; Sascha Peilicke 2012</p>
+        </footer>
       </div>
-      <hr>
-      <footer>
-        <p>&copy; Sascha Peilicke 2012</p>
-      </footer>
-    </div>
+    {% endblock %}
 
     <script src="/static/js/jquery.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
