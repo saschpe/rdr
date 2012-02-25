@@ -24,8 +24,8 @@
                     </ul>
                   </li>
                 {% else %}
-                  <li><a href="{% url django.contrib.auth.views.login %}?next={% url feeds.views.index %}">Log In</a></li>
-                  <li><a href="{% url accounts.views.register %}">Sign Up</a></li>
+                  <li><a href="{% url django.contrib.auth.views.login %}?next={% url apps.feeds.views.index %}">Log In</a></li>
+                  <li><a href="{% url apps.accounts.views.register %}">Sign Up</a></li>
                 {% endif %}
                 {% if user.is_staff %}
                   <li><a href="{% url admin:index %}">Admin</a></li>

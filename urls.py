@@ -8,8 +8,8 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     (r'^$', 'views.index'),
-    (r'^feeds/', include('feeds.urls')),
+    (r'^accounts/', include('apps.accounts.urls')),
     (r'^admin/', include(admin.site.urls)),
     (r'^admin/doc/', include('django.contrib.admindocs.urls')),
-    (r'^accounts/', include('accounts.urls')),
+    (r'^feeds/', include('apps.feeds.urls')),
 )

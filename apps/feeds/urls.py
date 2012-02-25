@@ -3,7 +3,7 @@
 from django.conf.urls.defaults import patterns
 
 
-urlpatterns = patterns('feeds.views',
+urlpatterns = patterns('apps.feeds.views',
     (r'^$', 'index'),
     (r'^(?P<feed_id>\d+)/$', 'show'),
 )

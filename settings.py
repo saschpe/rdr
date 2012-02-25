@@ -124,11 +124,13 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # Third party apps:
     #'gunicorn',
     'south',
 
-    #'accounts',
-    'feeds',
+    # Local apps:
+    #'apps.accounts',
+    'apps.feeds',
 )
 
 AUTH_PROFILE_MODULE = 'accounts.UserProfile'

@@ -48,14 +48,14 @@
             {% if user.is_authenticated %}
               <div class="sidebar-nav">
                 <ul class="nav nav-list">
-                  <li><a href="{% url feeds.views.index %}"><i class="icon-home"></i>Homepage</a></li>
+                  <li><a href="{% url apps.feeds.views.index %}"><i class="icon-home"></i>Homepage</a></li>
                   <li><a href="#"><i class="icon-search"></i>Discover</a></li>
                   {% block sidebar_subscriptions %}
                     {% if subscriptions %}
                       <li class="nav-header">My Subscriptions</li>
                       {% for subscription in subscriptions %}
                         <li>
-                          <a href="{% url feeds.views.show subscription.feed.id %}">
+                          <a href="{% url apps.feeds.views.show subscription.feed.id %}">
                             {% if subscription.custom_feed_title %}
                               <i>{{ subscription.custom_feed_title }}</i>
                             {% else %}
