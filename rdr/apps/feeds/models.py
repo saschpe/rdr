@@ -28,11 +28,11 @@ class FeedManager(models.Manager):
             subtitle=parsed.feed.get('subtitle', ''),
             link=parsed.feed.get('link', ''),
         )
-        if parsed.feed.has_key('updated_parsed'):
+        if 'updated_parsed' in parsed.feed:
             feed.updated = datetime.datetime(*parsed.feed.updated_parsed[:6])
-        if parsed.feed.has_key('etag'):
+        if 'etag' in parsed.feed:
             feed.etag = parsed.feed.etag
-        if parsed.feed.has_key('modified_parsed'):
+        if 'modified_parsed' in parsed.feed:
             feed.modified = datetime.datetime(*parsed.feed.modified_parsed[:6])
         feed.save()
         if create_entrys:
@@ -52,12 +52,12 @@ class Feed(models.Model):
     link = models.URLField()
     updated = models.DateTimeField(null=True)
 
-    etag = models.CharField(null=True, max_length=64, editable=False) # HTTP ETag header
-    modified = models.DateTimeField(null=True, editable=False) # HTTP Last-Modified header
+    etag = models.CharField(null=True, max_length=64, editable=False)  # HTTP ETag header
+    modified = models.DateTimeField(null=True, editable=False)  # HTTP Last-Modified header
 
-    subscribers = models.ManyToManyField(User, through='Subscription') # User Feed subscriptions
+    subscribers = models.ManyToManyField(User, through='Subscription')  # User Feed subscriptions
 
-    objects = FeedManager() # Custom model manager
+    objects = FeedManager()  # Custom model manager
 
     def update_by_url(self, create_entrys=True):
         '''Update the feed instance from it's web feed URL.
@@ -65,17 +65,17 @@ class Feed(models.Model):
         Honors HTTP Etag and Last-Modified headers to avoid fetching unchanged files.
         '''
         parsed = feedparser.parse(url, etag=feed.etag, modified=feed.modified)
-        if parsed.status == 304: # Unmodified file, nothing to do
+        if parsed.status == 304:  # Unmodified file, nothing to do
             return
 
         self.title = parsed.feed.get('title', ''),
         self.subtitle = parsed.feed.get('subtitle', ''),
         self.link = parsed.feed.get('link', ''),
-        if parsed.feed.has_key('updated_parsed'):
+        if 'updated_parsed' in parsed.feed:
             self.updated = datetime.datetime(*parsed.feed.updated_parsed[:6])
-        if parsed.feed.has_key('etag'):
+        if 'etag' in parsed.feed:
             self.etag = parsed.feed.etag
-        if parsed.feed.has_key('modified_parsed'):
+        if 'modified_parsed' in parsed.feed:
             self.modified = datetime.datetime(*parsed.feed.modified_parsed[:6])
         self.save()
         if create_entrys:
@@ -108,9 +108,9 @@ class EntryManager(models.Manager):
             link=parsed_entry.get('link', ''),
             author=parsed_entry.get('author', ''),
         )
-        if parsed_entry.has_key('updated_parsed'):
+        if 'updated_parsed' in parsed_entry:
             entry.updated = datetime.datetime(*parsed_entry.updated_parsed[:6])
-        if parsed_entry.has_key('published_parsed'):
+        if 'published_parsed' in parsed_entry:
             entry.published = datetime.datetime(*parsed_entry.published_parsed[:6])
         entry.save()
         return entry
@@ -129,7 +129,7 @@ class Entry(models.Model):
     published = models.DateTimeField(null=True)
     updated = models.DateTimeField(null=True)
 
-    objects = EntryManager() # Custom model manager
+    objects = EntryManager()  # Custom model manager
 
     def __unicode__(self):
         return self.title
@@ -156,7 +156,7 @@ class Subscription(models.Model):
     Stores a custom feed title that be set by the user. Unread entries are
     stored directly as a counter and only read entries have a real M2M
     relationship.
-    
+
     This should be fastest when a new subscription is added, the amount of
     unread entries equals all entries of a given feed. The 'read' M2M
     relationship goes through the 'ReadEntry' model that allows to store
