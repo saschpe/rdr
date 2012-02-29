@@ -23,4 +23,4 @@ def update_feed(feed, update_entries=True):
 @task
 def update_all_feeds(update_entries=True):
     for feed in Feed.objects.all():
-        feed.update(update_entries)
+        update_feed.delay(feed, update_entries)
