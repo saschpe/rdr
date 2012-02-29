@@ -11,10 +11,16 @@ def add(x, y):
 
 @task
 def create_feed_from_url(url, create_entries=True):
-    return Feed.create_feed_from_url(url, create_entries)
+    return Feed.objects.create_from_url(url, create_entries)
 
 
 @task
-def update_feed(feed, create_entries=True):
-    feed.update(create_entries)
+def update_feed(feed, update_entries=True):
+    feed.update(update_entries)
     return feed
+
+
+@task
+def update_all_feeds(update_entries=True):
+    for feed in Feed.objects.all():
+        feed.update(update_entries)
