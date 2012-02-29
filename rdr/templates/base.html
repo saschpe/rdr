@@ -40,7 +40,7 @@
       <div class="container-fluid">
         {% if user.is_authenticated %}
           {% include 'menubar.html' %}
-          <hr>
+          <hr/>
         {% endif %}
 
         <div class="row-fluid">
@@ -48,22 +48,24 @@
             {% if user.is_authenticated %}
               <div class="sidebar-nav">
                 <ul class="nav nav-list">
-                  <li><a href="{% url apps.feeds.views.index %}"><i class="icon-home"></i>Homepage</a></li>
+                  <li><a href="{% url apps.feeds.views.index %}"><i class="icon-home"></i>Overview</a></li>
                   <li><a href="#"><i class="icon-search"></i>Discover</a></li>
                   {% block sidebar_subscriptions %}
                     {% if subscriptions %}
                       <li class="nav-header">My Subscriptions</li>
                       {% for subscription in subscriptions %}
                         <li>
-                          <a href="{% url apps.feeds.views.show subscription.feed.id %}">
+                          <a class="rdr-subscription-link" href="{% url apps.feeds.views.show subscription.feed.id %}">
                             {% if subscription.custom_feed_title %}
-                              <i>{{ subscription.custom_feed_title }}</i>
+                              {{ subscription.custom_feed_title }}
                             {% else %}
                               {{ subscription.feed.title }}
                             {% endif %}
                             {% if subscription.unread_entries > 0 %}
                               ({{ subscription.unread_entries }})
                             {% endif %}
+                            <i class="hidden icon-remove pull-right" title="Unsubscribe feed"></i>
+                            <i class="hidden icon-edit pull-right" title="Edit feed title"></i>
                           </a>
                         </li>
                       {% endfor %}
@@ -86,5 +88,18 @@
 
     <script src="/static/js/jquery.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+      $('.rdr-subscription-link').hover(
+        function (data) { 
+          $(this).children('.icon-edit').attr('class', 'icon-edit pull-right').show();
+          $(this).children('.icon-remove').attr('class', 'icon-remove pull-right').show();
+        },
+        function (data) {
+          $(this).children('.icon-edit').hide();
+          $(this).children('.icon-remove').hide();
+        }
+      );
+      $('[title]').tooltip({placement: 'bottom'});
+    </script>
   </body>
 </html>
