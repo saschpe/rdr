@@ -75,7 +75,7 @@ def graph_migrations():
 def rebuild_index():
     require('hosts', provided_by=[production])
     manage_py('rebuild_index --noinput', use_sudo=True)
-    sudo('chown -R {0}:{1} {2}'.format(env.server_user, env.server_group, env.search_index)
+    sudo('chown -R {0}:{1} {2}'.format(env.server_user, env.server_group, env.search_index))
 
 
 def update_index():
@@ -114,3 +114,9 @@ def test(args=''):
    #    print result
    #if result.failed and not confirm('Test failed. Continue anyway?'):
    #    abort('Aborting at user request.')
+
+
+def pep8():
+    require('hosts', provided_by=[production])
+    to_test = (__file__, env.project_name)
+    run('pep8 --ignore=E501 {0}'.format(' '.join(to_test)))
