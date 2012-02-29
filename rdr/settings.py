@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-# Django settings for reader project.
+# Django settings
 
+import djcelery
 import os
 
 
@@ -16,7 +17,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',  # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'development.db',                # Or path to database file if using sqlite3.
+        'NAME': 'development.sqlite',            # Or path to database file if using sqlite3.
         'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
@@ -125,7 +126,9 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     # Third party apps:
+    'djcelery',
     #'gunicorn',
+    'kombu.transport.django', #Only used in DEBUG celery settings
     'south',
 
     # Local apps:
@@ -135,6 +138,11 @@ INSTALLED_APPS = (
 
 AUTH_PROFILE_MODULE = 'accounts.UserProfile'
 
+if DEBUG is True:
+    LOG_FILE_NAME = 'debug.log'
+else:
+    LOG_FILE_NAME = 'production.log'
+
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
 # the site admins on every HTTP 500 error.
@@ -143,17 +151,72 @@ AUTH_PROFILE_MODULE = 'accounts.UserProfile'
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(asctime)s: %(levelname)s %(module)s %(message)s',
+        },
+        'simple': {
+            'format': '%(asctime)s: %(levelname)s %(message)s',
+        },
+    },
+   #'filters': {
+   #    'sensitive': {
+   #        '()': 'project.logging.SpecialFilter',
+   #        'foo': 'bar',
+   #    }
+   #},
     'handlers': {
+        'null': {
+            'level': 'DEBUG',
+            'class': 'django.utils.log.NullHandler',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.WatchedFileHandler',
+            'formatter': 'simple',
+            'filename': os.path.join(os.path.curdir, 'log', LOG_FILE_NAME),
+        },
         'mail_admins': {
             'level': 'ERROR',
-            'class': 'django.utils.log.AdminEmailHandler'
+            'class': 'django.utils.log.AdminEmailHandler',
         }
     },
     'loggers': {
-        'django.request': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
+        'django': {
+            'handlers': ['null'],
             'propagate': True,
+            'level': 'INFO',
+        },
+        'django.request': {
+            'handlers': ['mail_admins', 'file'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'django.db.backends': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+        },
+        'apps.feeds.models': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
         },
     }
 }
+
+# Celery related
+djcelery.setup_loader()
+
+if DEBUG is True:
+    BROKER_URL = 'django://'
+    CELERY_RESULT_BACKEND = 'database'
+    CELERY_RESULT_DBURI = 'sqlite:///development.sqlite'
+else:
+    # http://docs.celeryq.org/en/latest/getting-started/brokers/rabbitmq.html
+    BROKER_URL = 'amqp://rdruser:rdrpass@localhost:5672/rdr'
+    CELERY_RESULT_BACKEND = 'database'
+    CELERY_RESULT_DBURI = 'postgresql://user:pass@localhost:1234/database'
