@@ -153,10 +153,10 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '%(asctime)s: %(levelname)s %(module)s %(message)s',
+            'format': '[%(asctime)s] %(levelname)s %(module)s %(process)d %(thread)d: %(message)s',
         },
         'simple': {
-            'format': '%(asctime)s: %(levelname)s %(message)s',
+            'format': '[%(asctime)s] %(levelname)s: %(message)s',
         },
     },
    #'filters': {
@@ -198,7 +198,7 @@ LOGGING = {
             'propagate': False,
         },
         'django.db.backends': {
-            'handlers': ['console', 'file'],
+            'handlers': ['file'],
             'level': 'INFO',
         },
         'apps.feeds.models': {

@@ -112,7 +112,7 @@ class EntryManager(models.Manager):
     '''
     def update_or_create_from_feed_and_parsed_entry(self, feed, parsed_entry):
         try:
-            return Entry.objects.get(feed=feed, title=parsed_entry.title).update(parsed_entry)
+            return Entry.objects.get(feed=feed, link=parsed_entry.link).update(parsed_entry)
         except Entry.DoesNotExist:
             return self.create_from_feed_and_parsed_entry(feed, parsed_entry)
 
@@ -123,14 +123,14 @@ class EntryManager(models.Manager):
             feed=feed,
             title=parsed_entry.title,
             summary=parsed_entry.get('summary', ''),
-            link=parsed_entry.get('link', ''),
+            link=parsed_entry.link,
             author=parsed_entry.get('author', ''),
         )
         if 'updated_parsed' in parsed_entry:
             entry.updated = datetime.datetime(*parsed_entry.updated_parsed[:6])
         if 'published_parsed' in parsed_entry:
             entry.published = datetime.datetime(*parsed_entry.published_parsed[:6])
-        logger.debug('entry "{0}" created for feed "{1}"'.format(entry, feed))
+        logger.debug('feed "{0}" entry "{1}" created"'.format(feed, entry))
         entry.save()
         return entry
 
@@ -148,6 +148,9 @@ class Entry(models.Model):
     published = models.DateTimeField(null=True)
     updated = models.DateTimeField(null=True)
     objects = EntryManager()  # Custom model manager
+
+    class Meta:
+        unique_together = (('feed', 'link'))
 
     def update(self, parsed_entry):
         '''Update the Entry model instance.
@@ -173,11 +176,11 @@ class Entry(models.Model):
                 self.published, entry_changed = parsed_published, True
 
         if entry_changed: # Only save Entry model if it actually changed
-            logger.debug('entry "{0}" updated for feed "{1}"'.format(self, self.feed))
+            logger.debug('feed "{0}" entry "{1}" updated"'.format(self.feed, self))
             self.save()
 
     def __unicode__(self):
-        return self.title
+        return self.link
 
 
 class ReadEntry(models.Model):
