@@ -1,0 +1,3 @@
+[submodule "3rdparty/bootstrap"]
+	path = 3rdparty/bootstrap
+	url = https://github.com/twitter/bootstrap/
