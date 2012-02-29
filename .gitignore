@@ -1,3 +1,4 @@
 *.pyc
 .*.sw?
 migrations.png
+rdr/log
