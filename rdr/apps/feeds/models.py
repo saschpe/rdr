@@ -195,7 +195,6 @@ class Visited(models.Model):
     marked = models.BooleanField(default=False)
 
     class Meta:
-        ordering = ('user', 'entry')
         unique_together = (('user', 'entry'))
 
     def __unicode__(self):
@@ -220,7 +219,6 @@ class Subscription(models.Model):
     unread_entries = models.PositiveIntegerField(default=0)
 
     class Meta:
-        ordering = ('user', 'feed')
         unique_together = (('user', 'feed'))
 
     def __unicode__(self):
