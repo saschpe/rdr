@@ -201,9 +201,12 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': False,
         },
+        # For performance reasons, SQL logging is only enabled when
+        # settings.DEBUG is set to True, regardless of the logging level
+        # or handlers that are installed.
         'django.db.backends': {
             'handlers': ['file'],
-            'level': 'INFO',
+            'level': 'DEBUG',
         },
         'apps.feeds.models': {
             'handlers': ['console', 'file'],
