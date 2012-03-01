@@ -70,7 +70,7 @@ STATIC_URL = '/static/'
 # URL prefix for admin static files -- CSS, JavaScript and images.
 # Make sure to use a trailing slash.
 # Examples: "http://foo.com/static/admin/", "/static/admin/".
-ADMIN_MEDIA_PREFIX = '/static/admin/'
+ADMIN_MEDIA_PREFIX = STATIC_URL + 'grappelli/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
@@ -116,6 +116,14 @@ TEMPLATE_DIRS = (
 )
 
 INSTALLED_APPS = (
+    # Third party apps:
+    'djcelery',
+    'grappelli',
+    #'gunicorn',
+    'kombu.transport.django', #Only used in DEBUG celery settings
+    'south',
+
+    # Django core apps:
     'django.contrib.admin',
     'django.contrib.admindocs',
     'django.contrib.auth',
@@ -125,18 +133,14 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # Third party apps:
-    'djcelery',
-    #'gunicorn',
-    'kombu.transport.django', #Only used in DEBUG celery settings
-    'south',
-
     # Local apps:
     #'apps.accounts',
     'apps.feeds',
 )
 
 AUTH_PROFILE_MODULE = 'accounts.UserProfile'
+
+GRAPPELLI_ADMIN_TITLE = 'rdr'
 
 if DEBUG is True:
     LOG_FILE_NAME = 'debug.log'
