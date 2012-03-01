@@ -3,6 +3,7 @@
 import datetime
 import feedparser
 import logging
+
 from django.contrib.auth.models import User
 from django.db import models
 
@@ -147,6 +148,7 @@ class Entry(models.Model):
     author = models.CharField(blank=True, max_length=64)
     published = models.DateTimeField(null=True)
     updated = models.DateTimeField(null=True)
+    visitors = models.ManyToManyField(User, through='Visited')
     objects = EntryManager()  # Custom model manager
 
     class Meta:
@@ -183,19 +185,21 @@ class Entry(models.Model):
         return self.link
 
 
-class ReadEntry(models.Model):
+class Visited(models.Model):
+    '''User visited an entry M2M relationship.
+
+    Users can also mark feed entries once they visited it.
     '''
-    '''
-    subscription = models.ForeignKey('Subscription')
+    user = models.ForeignKey(User)
     entry = models.ForeignKey(Entry)
     marked = models.BooleanField(default=False)
 
     class Meta:
-        ordering = ('subscription', 'entry')
-        unique_together = (('subscription', 'entry'))
+        ordering = ('user', 'entry')
+        unique_together = (('user', 'entry'))
 
     def __unicode__(self):
-        return '{0} - {1}'.format(self.subscription, self.entry)
+        return '{0} - {1}'.format(self.user, self.entry)
 
 
 class Subscription(models.Model):
@@ -213,7 +217,6 @@ class Subscription(models.Model):
     user = models.ForeignKey(User)
     feed = models.ForeignKey(Feed)
     custom_feed_title = models.CharField(blank=True, max_length=256)
-    read_entries = models.ManyToManyField(Entry, through='ReadEntry')
     unread_entries = models.PositiveIntegerField(default=0)
 
     class Meta:

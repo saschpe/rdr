@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from models import Entry, Feed, ReadEntry, Subscription
+from models import Entry, Feed, Visited, Subscription
 
 from django.contrib import admin
 
@@ -35,15 +35,15 @@ class FeedAdmin(admin.ModelAdmin):
     inlines = (EntryInline,)
 
 
-class ReadEntryAdmin(admin.ModelAdmin):
-    list_display = ('subscription', 'entry', 'marked')
-    list_filter = ('subscription', 'entry')
-    search_fields = ('subscription__user', 'entry__title')
+class VisitedAdmin(admin.ModelAdmin):
+    list_display = ('user', 'entry', 'marked')
+    list_filter = ('user', 'entry')
+    search_fields = ('user__username', 'entry__title')
 
 
-class ReadEntryInline(admin.StackedInline):
-    model = ReadEntry
-    fieldsets = ReadEntryAdmin.fieldsets
+class VisitedInline(admin.StackedInline):
+    model = Visited
+    fieldsets = VisitedAdmin.fieldsets
     extra = 5
 
 
@@ -51,10 +51,15 @@ class SubscriptionAdmin(admin.ModelAdmin):
     list_display = ('user', 'feed', 'custom_feed_title')
     list_filter = ('user', 'feed')
     search_fields = ('user__username', 'feed__title')
-    inlines = (ReadEntryInline,)
+
+
+class SubscriptionInline(admin.StackedInline):
+    models = Subscription
+    fieldsets = SubscriptionAdmin.fieldsets
+    extra = 5
 
 
 admin.site.register(Entry, EntryAdmin)
 admin.site.register(Feed, FeedAdmin)
-admin.site.register(ReadEntry, ReadEntryAdmin)
+admin.site.register(Visited, VisitedAdmin)
 admin.site.register(Subscription, SubscriptionAdmin)
