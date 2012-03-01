@@ -38,7 +38,8 @@ class FeedManager(models.Manager):
         if 'modified_parsed' in parsed.feed:
             feed.modified = datetime.datetime(*parsed.feed.modified_parsed[:6])
         logger.debug('feed "{0}" created'.format(feed))
-        feed.save()
+        feed.save() 
+        # TODO: Wrap in _one_ transaction...
         if create_entries:
             for parsed_entry in parsed.entries:
                 Entry.objects.create_from_feed_and_parsed_entry(self, feed, parsed_entry)
@@ -97,6 +98,7 @@ class Feed(models.Model):
         if feed_changed: # Only save Feed model if it really changed
             logger.debug('feed "{0}" updated'.format(self))
             self.save()
+        # TODO: Wrap in _one_ transaction...
         if update_entries: # Not 'feed_changed' doesn't mean that entries didn't change
             for parsed_entry in parsed.entries:
                 Entry.objects.update_or_create_from_feed_and_parsed_entry(self, parsed_entry)
