@@ -10,12 +10,12 @@ from django.template import RequestContext
 
 @login_required
 def index(request):
-    subscriptions = request.user.subscription_set.all()
+    subscriptions = request.user.subscription_set.select_related().all()
     return render_to_response('feeds/index.html', {'subscriptions': subscriptions}, context_instance=RequestContext(request))
 
 
 @login_required
 def show(request, feed_id):
-    subscriptions = request.user.subscription_set.all()
+    subscriptions = request.user.subscription_set.select_related().all()
     feed = get_object_or_404(Feed, pk=feed_id)
     return render_to_response('feeds/show.html', {'feed': feed, 'subscriptions': subscriptions}, context_instance=RequestContext(request))
