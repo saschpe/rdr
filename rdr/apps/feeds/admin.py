@@ -20,7 +20,7 @@ class EntryAdmin(admin.ModelAdmin):
 class EntryInline(admin.StackedInline):
     model = Entry
     fieldsets = EntryAdmin.fieldsets
-    extra = 3
+    extra = 1
 
 
 class FeedAdmin(admin.ModelAdmin):
