@@ -104,6 +104,13 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    # Debug Toolbar middleware must come after any other middleware that
+    # encodes the response's content (such as GZipMiddleware).
+    # Note: Be aware of middleware ordering and other middleware that may
+    # intercept requests and return responses. Putting the debug toolbar
+    # middleware after the Flatpage middleware, for example, means the toolbar
+    # will not show up on flatpages.
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 ROOT_URLCONF = 'urls'
@@ -117,6 +124,7 @@ TEMPLATE_DIRS = (
 
 INSTALLED_APPS = (
     # Third party apps:
+    'debug_toolbar',
     'djcelery',
     'grappelli',
     #'gunicorn',
@@ -139,8 +147,6 @@ INSTALLED_APPS = (
 )
 
 AUTH_PROFILE_MODULE = 'accounts.UserProfile'
-
-GRAPPELLI_ADMIN_TITLE = 'rdr'
 
 if DEBUG is True:
     LOG_FILE_NAME = 'debug.log'
@@ -215,7 +221,7 @@ LOGGING = {
     }
 }
 
-# Celery related
+# Celery settings:
 djcelery.setup_loader()
 
 if DEBUG is True:
@@ -227,3 +233,21 @@ else:
     BROKER_URL = 'amqp://rdruser:rdrpass@localhost:5672/rdr'
     CELERY_RESULT_BACKEND = 'database'
     CELERY_RESULT_DBURI = 'postgresql://user:pass@localhost:1234/database'
+
+# Debug toolbar settings:
+INTERNAL_IPS = ('127.0.0.1',)
+
+#def custom_show_toolbar(request):
+#    return True # Always show toolbar, for example purposes only.
+
+#DEBUG_TOOLBAR_CONFIG = {
+#    'INTERCEPT_REDIRECTS': False,
+#    'SHOW_TOOLBAR_CALLBACK': custom_show_toolbar,
+#    'EXTRA_SIGNALS': ['myproject.signals.MySignal'],
+#    'HIDE_DJANGO_SQL': False,
+#    'TAG': 'div',
+#    'ENABLE_STACKTRACES' : True,
+#}
+
+# Grappelli theme settings:
+GRAPPELLI_ADMIN_TITLE = 'rdr'
