@@ -1,3 +1,6 @@
+/*
+ * Django CSRF support for JQuery.
+ */
 $(document).ajaxSend(function(event, xhr, settings) {
     function getCookie(name) {
         var cookieValue = null;
@@ -34,3 +37,11 @@ $(document).ajaxSend(function(event, xhr, settings) {
         xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
     }
 });
+
+/*
+ * Add a (styled) tooltip to all elements with a 'title' attribute. Uses the
+ * bootstrap 'tooltip' JQuery plugin.
+ */
+$('[title]').tooltip({
+  placement: 'bottom'}
+);
