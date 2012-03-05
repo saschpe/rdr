@@ -240,14 +240,14 @@ INTERNAL_IPS = ('127.0.0.1',)
 #def custom_show_toolbar(request):
 #    return True # Always show toolbar, for example purposes only.
 
-#DEBUG_TOOLBAR_CONFIG = {
-#    'INTERCEPT_REDIRECTS': False,
+DEBUG_TOOLBAR_CONFIG = {
+    'INTERCEPT_REDIRECTS': False,
 #    'SHOW_TOOLBAR_CALLBACK': custom_show_toolbar,
 #    'EXTRA_SIGNALS': ['myproject.signals.MySignal'],
 #    'HIDE_DJANGO_SQL': False,
 #    'TAG': 'div',
 #    'ENABLE_STACKTRACES' : True,
-#}
+}
 
 # Grappelli theme settings:
 GRAPPELLI_ADMIN_TITLE = 'rdr'
