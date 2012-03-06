@@ -16,12 +16,12 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',  # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'development.sqlite',            # Or path to database file if using sqlite3.
-        'USER': '',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',  # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'rdr',          # Or path to database file if using sqlite3.
+        'USER': 'rdr',          # Not used with sqlite3.
+        'PASSWORD': 'rdr',  # Not used with sqlite3.
+        'HOST': '',             # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '',             # Set to empty string for default. Not used with sqlite3.
     }
 }
 
@@ -221,6 +221,7 @@ LOGGING = {
     }
 }
 
+
 # Celery settings:
 djcelery.setup_loader()
 
@@ -233,6 +234,7 @@ else:
     BROKER_URL = 'amqp://rdruser:rdrpass@localhost:5672/rdr'
     CELERY_RESULT_BACKEND = 'database'
     CELERY_RESULT_DBURI = 'postgresql://user:pass@localhost:1234/database'
+
 
 # Debug toolbar settings:
 INTERNAL_IPS = ('127.0.0.1',)
@@ -248,6 +250,7 @@ DEBUG_TOOLBAR_CONFIG = {
 #    'TAG': 'div',
 #    'ENABLE_STACKTRACES' : True,
 }
+
 
 # Grappelli theme settings:
 GRAPPELLI_ADMIN_TITLE = 'rdr'
