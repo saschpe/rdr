@@ -31,7 +31,7 @@ class WebsiteManager(models.Manager):
 
     def create_from_url(self, url, create_entries=True):
         response = requests.get(url)
-        html = lxml.html.fromstring(response.text).getroot()
+        html = lxml.html.fromstring(response.text)
         feed_links = html.cssselect('head link[type="application/rss+xml"], head link[type="application/atom+xml"]')
         if not feed_links:
             return
@@ -66,7 +66,7 @@ class Website(models.Model):
             logger.debug('website "{0}" unmodified'.format(self))
             return
 
-        html = lxml.html.fromstring(response.text).getroot()
+        html = lxml.html.fromstring(response.text)
         website_changed = False
         if response.headers['Etag'] != self.etag:
             self.etag, website_changed = response.headers['Etag'], True
@@ -89,12 +89,6 @@ class Website(models.Model):
 
     def __unicode__(self):
         return self.title
-
-
-#   class FeedSet(models.Model):
-#       title = models.CharField(max_length=256)
-#       feeds = models.ManyToManyField('Feed')
-#       websites = models.ManyToManyField()
 
 
 class FeedManager(models.Manager):
@@ -197,6 +191,9 @@ class Feed(models.Model):
         if update_entries: # Not 'feed_changed' doesn't mean that entries didn't change
             for parsed_entry in parsed.entries:
                 Entry.objects.update_or_create_from_feed_and_parsed_entry(self, parsed_entry)
+
+    #def get_link(self):
+    #    pass
 
     def __unicode__(self):
         return self.title
