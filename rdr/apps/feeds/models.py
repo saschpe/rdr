@@ -58,6 +58,7 @@ class Website(models.Model):
     #image = models.ImageField(...)
     etag = models.CharField(max_length=64, editable=False)  # HTTP ETag header
     modified = models.DateTimeField(null=True, editable=False)  # HTTP Last-Modified header
+    objects = WebsiteManager()  # Custom model manager
 
     def update(self, update_title=False, update_entries=True):
         response = requests.get(url, headers={'If-None-Match': self.etag, 'If-Modified-Since': self.modified})
@@ -80,10 +81,11 @@ class Website(models.Model):
             logger.debug('website "{0}" updated'.format(self))
             website.save()
 
-        #TODO
-        feed_links = html.cssselect('head link[type="application/rss+xml"], head link[type="application/atom+xml"]')
-        for feed_link in feed_links:
-            pass
+       ##TODO
+       #feed_links = html.cssselect('head link[type="application/rss+xml"], head link[type="application/atom+xml"]')
+       #website_feeds = self.feed_set
+       #for feed_link in feed_links:
+       #    pass
 
     def __unicode__(self):
         return self.title
