@@ -56,8 +56,9 @@ class Website(models.Model):
     url = models.URLField(unique=True)
     title = models.CharField(max_length=256)
     #image = models.ImageField(...)
-    etag = models.CharField(max_length=64, editable=False)  # HTTP ETag header
-    modified = models.DateTimeField(null=True, editable=False)  # HTTP Last-Modified header
+    etag = models.CharField(editable=False, max_length=64)  # HTTP ETag header
+    modified = models.DateTimeField(editable=False, null=True)  # HTTP Last-Modified header
+
     objects = WebsiteManager()  # Custom model manager
 
     def update(self, update_title=False, update_entries=True):
@@ -88,7 +89,8 @@ class Website(models.Model):
        #    pass
 
     def __unicode__(self):
-        return self.title
+        #TODO: ''.format() prefers to die with unicode errors here:
+        return '%s (%s)' % (self.title, self.url)
 
 
 class FeedManager(models.Manager):
@@ -141,11 +143,12 @@ class Feed(models.Model):
     subtitle = models.CharField(max_length=256)
     #image = models.ImageField(...)
     link = models.URLField()
-    updated = models.DateTimeField(null=True)
-    etag = models.CharField(max_length=64, editable=False)  # HTTP ETag header
-    modified = models.DateTimeField(null=True, editable=False)  # HTTP Last-Modified header
+    website = models.ForeignKey(Website, blank=True, null=True)  # The website to which this feed belongs to
+    updated = models.DateTimeField(blank=True, null=True)
     subscribers = models.ManyToManyField(User, through='Subscription')  # User Feed subscriptions
-    website = models.ForeignKey(Website, null=True) # The website to which this feed belongs to
+    etag = models.CharField(editable=False, max_length=64)  # HTTP ETag header
+    modified = models.DateTimeField(editable=False, null=True)  # HTTP Last-Modified header
+
     objects = FeedManager()  # Custom model manager
 
     def update(self, update_entries=True, website=None):
@@ -192,11 +195,8 @@ class Feed(models.Model):
             for parsed_entry in parsed.entries:
                 Entry.objects.update_or_create_from_feed_and_parsed_entry(self, parsed_entry)
 
-    #def get_link(self):
-    #    pass
-
     def __unicode__(self):
-        return self.title
+        return '{0} ({1})'.format(self.title, self.url)
 
 
 class EntryManager(models.Manager):
@@ -240,9 +240,10 @@ class Entry(models.Model):
     summary = models.TextField()
     link = models.URLField()
     author = models.CharField(blank=True, max_length=64)
-    published = models.DateTimeField(null=True)
-    updated = models.DateTimeField(null=True)
+    published = models.DateTimeField(blank=True, null=True)
+    updated = models.DateTimeField(blank=True, null=True)
     visitors = models.ManyToManyField(User, through='Visited')
+
     objects = EntryManager()  # Custom model manager
 
     class Meta:
@@ -276,7 +277,8 @@ class Entry(models.Model):
             self.save()
 
     def __unicode__(self):
-        return self.link
+        #TODO: ''.format() prefers to die with unicode errors here:
+        return '%s (%s)' % (self.title, self.link)
 
 
 class Visited(models.Model):
@@ -292,7 +294,7 @@ class Visited(models.Model):
         unique_together = (('user', 'entry'))
 
     def __unicode__(self):
-        return '{0} - {1}'.format(self.user, self.entry)
+        return '{0} | {1}'.format(self.user, self.entry)
 
 
 class Subscription(models.Model):
@@ -315,4 +317,4 @@ class Subscription(models.Model):
         unique_together = (('user', 'feed'))
 
     def __unicode__(self):
-        return '{0} - {1}'.format(self.user, self.feed)
+        return '{0} | {1}'.format(self.user, self.feed)
