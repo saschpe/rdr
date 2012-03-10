@@ -12,7 +12,7 @@ class EntryAdmin(admin.ModelAdmin):
     search_fields = ('feed__title', 'title', 'summary', 'link', 'author')
     fieldsets = (
         (None,                  {'fields': ('feed', 'title', 'summary', 'link', 'author')}),
-        ('Date information',    {'fields': ('published', 'updated'), 'classes': ('collapse')}),
+        ('Date information',    {'fields': ('published', 'updated'), 'classes': ('collapse closed',)}),
     )
 
 
@@ -40,7 +40,7 @@ class FeedAdmin(admin.ModelAdmin):
     search_fields = ('url', 'title', 'subtitle', 'link', 'website__title')
     fieldsets = (
         (None,               {'fields': ('url', 'title', 'subtitle', 'link', 'website')}),
-        ('Date information', {'fields': ('updated',), 'classes': ('collapse')}),
+        ('Date information', {'fields': ('updated',), 'classes': ('collapse closed',)}),
     )
     inlines = (EntryInline, SubscriptionInline)
 
