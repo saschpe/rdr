@@ -44,7 +44,7 @@ class WebsiteManager(models.Manager):
         logger.debug('website "{0}" created'.format(website))
         website.save()
         for feed_link in feed_links:
-            feed = Feed.objects.get_or_create_from_url(feed_link.get('href'), create_entries)
+            Feed.objects.get_or_create_from_url(feed_link.get('href'), create_entries, self)
         return website
 
 
@@ -101,17 +101,17 @@ class FeedManager(models.Manager):
     Provides table-level methods to create Feed model objects from RSS/Atom
     files fetched from a URL using the 'feedparser' Python module.
     '''
-    def get_or_create_from_url(self, url, create_entries=True):
+    def get_or_create_from_url(self, url, create_entries=True, website=None):
         try:
-            return Feed.objects.get(url=url)
+            feed = Feed.objects.get(url=url)
         except Feed.DoesNotExist:
-            return self.create_from_url(url, create_entries)
+            return self.create_from_url(url, create_entries, website)
 
-    def update_or_create_from_url(self, url, update_entries=True):
+    def update_or_create_from_url(self, url, update_entries=True, website=None):
         try:
-            return Feed.objects.get(url=url).update(update_entries)
+            return Feed.objects.get(url=url).update(update_entries, website)
         except Feed.DoesNotExist:
-            return self.create_from_url(url, update_entries)
+            return self.create_from_url(url, update_entries, website)
 
     def create_from_url(self, url, create_entries=True, website=None):
         parsed = feedparser.parse(url)
