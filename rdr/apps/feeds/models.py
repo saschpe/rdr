@@ -3,12 +3,96 @@
 import datetime
 import feedparser
 import logging
-
+import lxml.html
+import requests
 from django.contrib.auth.models import User
 from django.db import models
 
 
 logger = logging.getLogger(__name__)
+
+
+class WebsiteManager(models.Manager):
+    '''Custom Website model manager.
+
+    Creates a new Website from an URL. Parses the base URL
+    '''
+    def get_or_create_from_url(self, url, create_entries=True):
+        try:
+            return Website.objects.get(url=url)
+        except Website.DoesNotExist:
+            return self.create_from_url(url, create_entries)
+
+    def update_or_create_from_url(self, url, update_entries=True):
+        try:
+            return Website.objects.get(url=url).update(update_entries)
+        except Website.DoesNotExist:
+            return self.create_from_url(url, update_entries)
+
+    def create_from_url(self, url, create_entries=True):
+        response = requests.get(url)
+        html = lxml.html.fromstring(response.text).getroot()
+        feed_links = html.cssselect('head link[type="application/rss+xml"], head link[type="application/atom+xml"]')
+        if not feed_links:
+            return
+        website = Website(
+            url=url,
+            title=html.cssselect('head title')[0].text,
+            etag=response.headers['Etag'],
+            modified=response.headers['Last-Modified']
+        )
+        logger.debug('website "{0}" created'.format(website))
+        website.save()
+        for feed_link in feed_links:
+            feed = Feed.objects.get_or_create_from_url(feed_link.get('href'), create_entries)
+        return website
+
+
+class Website(models.Model):
+    '''Website model
+
+    A website that contains (multiple) Atom/RSS feeds.
+    '''
+    url = models.URLField(unique=True)
+    title = models.CharField(max_length=256)
+    #image = models.ImageField(...)
+    etag = models.CharField(max_length=64, editable=False)  # HTTP ETag header
+    modified = models.DateTimeField(null=True, editable=False)  # HTTP Last-Modified header
+
+    def update(self, update_title=False, update_entries=True):
+        response = requests.get(url, headers={'If-None-Match': self.etag, 'If-Modified-Since': self.modified})
+        if response.status == 304:  # Unmodified file, nothing to do
+            logger.debug('website "{0}" unmodified'.format(self))
+            return
+
+        html = lxml.html.fromstring(response.text).getroot()
+        website_changed = False
+        if response.headers['Etag'] != self.etag:
+            self.etag, website_changed = response.headers['Etag'], True
+        if response.headers['Last-Modified'] != self.modified:
+            self.modified, website_changed = response.headers['Last-Modified'], True
+        if update_title:
+            title = html.cssselect('head title')[0].text
+            if self.title != title:
+                self.title, website_changed = title, True
+
+        if website_changed:
+            logger.debug('website "{0}" updated'.format(self))
+            website.save()
+
+        #TODO
+        feed_links = html.cssselect('head link[type="application/rss+xml"], head link[type="application/atom+xml"]')
+        for feed_link in feed_links:
+            pass
+
+    def __unicode__(self):
+        return self.title
+
+
+#   class FeedSet(models.Model):
+#       title = models.CharField(max_length=256)
+#       feeds = models.ManyToManyField('Feed')
+#       websites = models.ManyToManyField()
 
 
 class FeedManager(models.Manager):
@@ -17,24 +101,29 @@ class FeedManager(models.Manager):
     Provides table-level methods to create Feed model objects from RSS/Atom
     files fetched from a URL using the 'feedparser' Python module.
     '''
+    def get_or_create_from_url(self, url, create_entries=True):
+        try:
+            return Feed.objects.get(url=url)
+        except Feed.DoesNotExist:
+            return self.create_from_url(url, create_entries)
+
     def update_or_create_from_url(self, url, update_entries=True):
         try:
             return Feed.objects.get(url=url).update(update_entries)
         except Feed.DoesNotExist:
             return self.create_from_url(url, update_entries)
 
-    def create_from_url(self, url, create_entries=True):
+    def create_from_url(self, url, create_entries=True, website=None):
         parsed = feedparser.parse(url)
         feed = Feed(
             url=parsed.href,
             title=parsed.feed.get('title', ''),
             subtitle=parsed.feed.get('subtitle', ''),
             link=parsed.feed.get('link', ''),
+            etag=parsed.feed.get('etag', ''),
         )
         if 'updated_parsed' in parsed.feed:
             feed.updated = datetime.datetime(*parsed.feed.updated_parsed[:6])
-        if 'etag' in parsed.feed:
-            feed.etag = parsed.feed.etag
         if 'modified_parsed' in parsed.feed:
             feed.modified = datetime.datetime(*parsed.feed.modified_parsed[:6])
         logger.debug('feed "{0}" created'.format(feed))
@@ -42,7 +131,7 @@ class FeedManager(models.Manager):
         # TODO: Wrap in _one_ transaction...
         if create_entries:
             for parsed_entry in parsed.entries:
-                Entry.objects.create_from_feed_and_parsed_entry(self, feed, parsed_entry)
+                Entry.objects.create_from_feed_and_parsed_entry(feed, parsed_entry)
         return feed
 
 
@@ -54,14 +143,16 @@ class Feed(models.Model):
     url = models.URLField(unique=True)
     title = models.CharField(max_length=256)
     subtitle = models.CharField(max_length=256)
+    #image = models.ImageField(...)
     link = models.URLField()
     updated = models.DateTimeField(null=True)
-    etag = models.CharField(null=True, max_length=64, editable=False)  # HTTP ETag header
+    etag = models.CharField(max_length=64, editable=False)  # HTTP ETag header
     modified = models.DateTimeField(null=True, editable=False)  # HTTP Last-Modified header
     subscribers = models.ManyToManyField(User, through='Subscription')  # User Feed subscriptions
+    website = models.ForeignKey(Website, null=True) # The website to which this feed belongs to
     objects = FeedManager()  # Custom model manager
 
-    def update(self, update_entries=True):
+    def update(self, update_entries=True, website=None):
         '''Update the feed model instance.
         
         Requests the Atom/RSS file from the upstream feed URL and parses the results.
@@ -94,6 +185,8 @@ class Feed(models.Model):
             parsed_modified = datetime.datetime(*parsed.feed.modified_parsed[:6]) 
             if self.modified != parsed_modified:
                 self.modified, feed_changed = parsed_modified, True
+        if website and self.website != website:
+            self.website, feed_changed = website, True
 
         if feed_changed: # Only save Feed model if it really changed
             logger.debug('feed "{0}" updated'.format(self))
