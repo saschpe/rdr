@@ -310,7 +310,6 @@ class Subscription(models.Model):
     user = models.ForeignKey(User)
     feed = models.ForeignKey(Feed)
     custom_feed_title = models.CharField(blank=True, max_length=256)
-    unread_entries = models.PositiveIntegerField(default=0)
 
     class Meta:
         unique_together = (('user', 'feed'))
