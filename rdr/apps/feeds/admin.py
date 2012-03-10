@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from models import Entry, Feed, Visited, Subscription
+from models import Entry, Feed, Subscription, Visited, Website
 
 from django.contrib import admin
 
@@ -20,7 +20,7 @@ class EntryAdmin(admin.ModelAdmin):
 class EntryInline(admin.StackedInline):
     model = Entry
     fieldsets = EntryAdmin.fieldsets
-    extra = 1
+    extra = 0
 
 
 class FeedAdmin(admin.ModelAdmin):
@@ -35,16 +35,10 @@ class FeedAdmin(admin.ModelAdmin):
     inlines = (EntryInline,)
 
 
-class VisitedAdmin(admin.ModelAdmin):
-    list_display = ('user', 'entry', 'marked')
-    list_filter = ('user', 'entry')
-    search_fields = ('user__username', 'entry__title')
-
-
-class VisitedInline(admin.StackedInline):
-    model = Visited
-    fieldsets = VisitedAdmin.fieldsets
-    extra = 5
+class FeedInline(admin.StackedInline):
+    model = Feed
+    fieldsets = FeedAdmin.fieldsets
+    extra = 0
 
 
 class SubscriptionAdmin(admin.ModelAdmin):
@@ -59,7 +53,27 @@ class SubscriptionInline(admin.StackedInline):
     extra = 5
 
 
+class VisitedAdmin(admin.ModelAdmin):
+    list_display = ('user', 'entry', 'marked')
+    list_filter = ('user', 'entry')
+    search_fields = ('user__username', 'entry__title')
+
+
+class VisitedInline(admin.StackedInline):
+    model = Visited
+    fieldsets = VisitedAdmin.fieldsets
+    extra = 5
+
+
+class WebsiteAdmin(admin.ModelAdmin):
+    list_display = ('url', 'title')
+    list_filter = ('url', 'title')
+    search_fields = ('url', 'title')
+    inlines = (FeedInline,)
+
+
 admin.site.register(Entry, EntryAdmin)
 admin.site.register(Feed, FeedAdmin)
-admin.site.register(Visited, VisitedAdmin)
 admin.site.register(Subscription, SubscriptionAdmin)
+admin.site.register(Visited, VisitedAdmin)
+admin.site.register(Website, WebsiteAdmin)
