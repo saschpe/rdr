@@ -128,7 +128,6 @@ INSTALLED_APPS = (
     'djcelery',
     'grappelli',
     #'gunicorn',
-    'kombu.transport.django', #Only used in DEBUG celery settings
     'south',
 
     # Django core apps:
