@@ -1,12 +1,14 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <a href="{{ feed.link }}" target="_blank"><h3>{{ feed.title }}</h3></a>
+  <h3>
+    <a href="{{ feed.link }}" target="_blank">{{ feed.title }}</a>
+  </h3>
   {% if feed.subtitle %}<small>{{ feed.subtitle }}</small>{% endif %}
   <hr/>
 
   {% for entry in feed.entry_set.all %}
-    <div class="well">
+    <div class="entry" id="entry-{{ entry.id }}">
       {% if entry.published or entry.updated %}
         <small class="pull-right">
           {% if entry.published %}Published {{ entry.published }}{% endif %}
@@ -14,11 +16,19 @@
           {% if entry.updated %}Updated {{ entry.updated }}{% endif %}
         </small>
       {% endif %}
-      <a href="{{ entry.link }}" target="_blank"><h4>{{ entry.title }}</h4></a>
+      <h4>
+        <a href="{{ entry.link }}" target="_blank">{{ entry.title }}</a>
+        <i class="icon-star-empty"></i>
+      </h4>
       {% if entry.author %}
         <small>by {{ entry.author }}</small>
       {% endif %}
       <p>{{ entry.summary|safe }}</p>
+      <!--<form action="{% url apps.feeds.views.visit feed.id %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="entry" value="{{ entry.id }}"/>
+        <input type="submit" value="visit"/>
+      </form>-->
     </div>
   {% endfor %}
 {% endblock %}

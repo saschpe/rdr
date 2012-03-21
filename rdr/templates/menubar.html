@@ -5,9 +5,10 @@
                 Subscribe to Feed
                 <span class="caret"></span>
               </a>
-              <ul class="dropdown-menu">
-                <form class="form-inline">
-                  <input type="text" class="input-large" placeholder="Feed URL">
+              <ul class="dropdown">
+                <form class="form-inline" action="{% url apps.feeds.views.subscribe %}" method="post">
+                  {% csrf_token %}
+                  <input type="text" name="url" class="input-large" placeholder="Feed URL">
                   <button type="submit" class="btn">Subscribe</button>
                 </form>
               </ul>

@@ -1,10 +1,21 @@
 body {
   padding-top: 60px;
 }
+
 .btn-toolbar {
   margin-bottom: 0px;
   margin-top: 0px;
 }
+
 .nomargin {
   margin: 0px;
+}
+
+.entry {
+  border: 1px solid #eee;
+  padding: 5px;
+  margin-bottom: 10px;
+}
+.entry:last-child {
+  margin-bottom: 0px;
 }
