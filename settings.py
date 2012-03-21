@@ -225,15 +225,10 @@ LOGGING = {
 # Celery settings:
 djcelery.setup_loader()
 
-if DEBUG is True:
-    BROKER_URL = 'django://'
-    CELERY_RESULT_BACKEND = 'database'
-    CELERY_RESULT_DBURI = 'postgresql://rdr:rdr@localhost:1234/rdr'
-else:
-    # http://docs.celeryq.org/en/latest/getting-started/brokers/rabbitmq.html
-    BROKER_URL = 'amqp://rdruser:rdrpass@localhost:5672/rdr'
-    CELERY_RESULT_BACKEND = 'database'
-    CELERY_RESULT_DBURI = 'postgresql://rdr:rdr@localhost:1234/rdr'
+# http://docs.celeryq.org/en/latest/getting-started/brokers/rabbitmq.html
+BROKER_URL = 'amqp://rdr:rdr@localhost:5672/rdr'
+CELERY_RESULT_BACKEND = 'database'
+CELERY_RESULT_DBURI = 'postgresql://rdr:rdr@localhost:1234/rdr'
 
 
 # Debug toolbar settings:
