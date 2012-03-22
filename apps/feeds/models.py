@@ -145,7 +145,7 @@ class Feed(models.Model):
     link = models.URLField()
     website = models.ForeignKey(Website, blank=True, null=True)  # The website to which this feed belongs to
     updated = models.DateTimeField(blank=True, null=True)
-    subscribers = models.ManyToManyField(User, through='Subscription')  # User Feed subscriptions
+    subscriber_set = models.ManyToManyField(User, through='Subscription')  # User Feed subscriptions
     etag = models.CharField(editable=False, max_length=64)  # HTTP ETag header
     modified = models.DateTimeField(editable=False, null=True)  # HTTP Last-Modified header
 
@@ -242,7 +242,7 @@ class Entry(models.Model):
     author = models.CharField(blank=True, max_length=64)
     published = models.DateTimeField(blank=True, null=True)
     updated = models.DateTimeField(blank=True, null=True)
-    visitors = models.ManyToManyField(User, through='Visited')
+    visitor_set = models.ManyToManyField(User, through='Visited')
 
     objects = EntryManager()  # Custom model manager
 
