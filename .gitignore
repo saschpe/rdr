@@ -4,3 +4,4 @@ migrations.png
 log/*.log
 *.vim
 celerybeat-schedule
+env
