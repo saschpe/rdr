@@ -129,6 +129,7 @@ INSTALLED_APPS = (
     'grappelli',
     #'gunicorn',
     'south',
+    'tastypie',
 
     # Django core apps:
     'django.contrib.admin',
