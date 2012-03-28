@@ -1,7 +1,6 @@
 *.pyc
 .*.sw?
-migrations.png
-log/*.log
+rdr/migrations.png
+rdr/log/*.log
 *.vim
-celerybeat-schedule
-env
+venv
