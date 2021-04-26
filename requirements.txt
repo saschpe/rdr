@@ -1,4 +1,4 @@
-Django==1.4
+Django==1.11.29
 Fabric==1.4.0
 South==0.7.4
 amqplib==1.0.2
